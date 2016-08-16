@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ /**
+  * © Copyright IBM Corporation 2014, 2016.
+  * This is licensed under the following license.
+  * The Eclipse Public 1.0 License (http://www.eclipse.org/legal/epl-v10.html)
+  * U.S. Government Users Restricted Rights:  Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+  */
+
+-->
+<plugin xmlns="http://www.urbancode.com/PluginXMLSchema_v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <header>
+    <identifier id="com.ibm.urbancode.air.plugin.puppet" name="Puppet" version="3"/>
+    <description>
+Plugin for applying puppet manifests or calling puppet agent.
+      </description>
+    <tag>Automation/Puppet</tag>
+  </header>
+  <step-type name="Apply">
+    <description>Apply one or more manifest through puppet.</description>
+    <properties>
+      <property name="commandPath" required="true">
+        <property-ui type="textBox"
+                     label="Puppet Executable"
+                     description="Full path to puppet executable or just 'puppet' if on path."
+                     default-value="puppet"/>
+      </property>
+      <property name="includes" required="true">
+        <property-ui type="textAreaBox"
+                     label="Includes"
+                     description="New line seperated list of include patterns for manifests to be applied. The manifests must exist in the UrbanCode Agent's working directory."
+                     default-value="**/*.pp"/>
+      </property>
+
+      <property name="excludes">
+        <property-ui type="textAreaBox"
+                     label="Excludes"
+                     description="New line seperated list of exclude patterns."
+                     default-value=""/>
+      </property>
+      <property name="additionalArgs">
+        <property-ui type="textAreaBox"
+                     label="Additional Arguments"
+                     description="List of additional arguments to include. Include each argument on a separate line."/>
+      </property>
+    </properties>
+    <post-processing><![CDATA[
+        if (properties.get("exitCode") != 0) {
+            properties.put(new java.lang.String("Status"), new java.lang.String("Failure"));
+        }
+        else {
+            properties.put("Status", "Success");
+        }
+     ]]></post-processing>
+    <command program="${GROOVY_HOME}/bin/groovy">
+      <arg value="-cp"/>
+      <arg path="classes:lib/groovy-plugin-utils-1.0.jar"/>
+      <arg file="apply.groovy"/>
+      <arg file="${PLUGIN_INPUT_PROPS}"/>
+      <arg file="${PLUGIN_OUTPUT_PROPS}"/>
+    </command>
+  </step-type>
+  <step-type name="Update From Puppet Master">
+    <description>Run puppet agent to get updates from master.</description>
+    <properties>
+      <property name="commandPath" required="true">
+        <property-ui type="textBox"
+                     label="Puppet Executable"
+                     description="Full path to puppet executable or just 'puppet' if on path."
+                     default-value="puppet"/>
+      </property>
+      <property name="oneTime" required="true">
+        <property-ui type="selectBox"
+                     label="Run One Time"
+                     description="Specify to run the configuration one time."
+                     default-value="--onetime"/>
+                    <value label="--onetime">--onetime</value>
+                    <value label="None">null</value>
+      </property>
+      <property name="verbose" required="true">
+        <property-ui type="selectBox"
+                     label="Verbose"
+                     description="Specify verbose output for the command."
+                     default-value="--verbose"/>
+                    <value label="--verbose">--verbose</value>
+                    <value label="None">null</value>
+      </property>
+      <property name="daemonize" required="true">
+        <property-ui type="selectBox"
+                     label="Daemonize"
+                     description="Send the process into the background or not."
+                     default-value="--no-daemonize"/>
+                    <value label="--no-daemonize">--no-daemonize</value>
+                    <value label="--daemonize">--daemonize</value>
+      </property>
+      <property name="additionalArgs">
+        <property-ui type="textAreaBox"
+                     label="Additional Arguments"
+                     description="List of additional arguments to include. Include each argument on a separate line."/>
+      </property>
+    </properties>
+    <post-processing><![CDATA[
+        if (properties.get("exitCode") != 0) {
+            properties.put(new java.lang.String("Status"), new java.lang.String("Failure"));
+        }
+        else {
+            properties.put("Status", "Success");
+        }
+     ]]></post-processing>
+    <command program="${GROOVY_HOME}/bin/groovy">
+      <arg value="-cp"/>
+      <arg path="classes:lib/groovy-plugin-utils-1.0.jar"/>
+      <arg file="agent.groovy"/>
+      <arg file="${PLUGIN_INPUT_PROPS}"/>
+      <arg file="${PLUGIN_OUTPUT_PROPS}"/>
+    </command>
+  </step-type>
+</plugin>
