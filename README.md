@@ -23,7 +23,7 @@ This plug-in is protected under the [Eclipse Public 1.0 License](http://www.ecli
             - Properties are no longer hidden.
             - Migrated 'Agent' step's properties to select boxes.
             - Updated the Additional Args delimiter functionality.
-            - Added Warning when no manifests were found in 'Update From Puppet Master' step.
+            - Added Warning message when no manifests are found in 'Update From Puppet Master' step.
  
 ### How to build the plugin from eclipse client:
 
@@ -35,5 +35,4 @@ This plug-in is protected under the [Eclipse Public 1.0 License](http://www.ecli
 
 1. Navigate to the base folder of the project through command line.
 2. Make sure that there is build.xml file there, and then execute 'ant' command.
-3. The built plugin is located at releases/Puppet-UCD-vdev.zip 
-Note: Edit the Build.xml to change the version 'dev' to a release number.
+3. The built plugin is located at releases/Puppet-UCD-vdev.zip
